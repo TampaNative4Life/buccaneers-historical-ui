@@ -1,0 +1,281 @@
+USE Buccaneers_Historical;
+GO
+
+/*===========================================================
+PLAYER SEARCH VIEW
+===========================================================*/
+IF OBJECT_ID('dbo.vwPlayerSearch','V') IS NOT NULL
+DROP VIEW dbo.vwPlayerSearch;
+GO
+
+CREATE VIEW dbo.vwPlayerSearch
+AS
+SELECT
+    PlayerID,
+    SeasonYear,
+    JerseyNumber,
+    Forename,
+    Surname,
+    FullName,
+    Position,
+    Team,
+    Height,
+    Weight,
+    BirthDate,
+    College
+FROM dbo.tblPlayers;
+GO
+
+
+/*===========================================================
+GAME SEARCH VIEW
+===========================================================*/
+IF OBJECT_ID('dbo.vwGameSearch','V') IS NOT NULL
+DROP VIEW dbo.vwGameSearch;
+GO
+
+CREATE VIEW dbo.vwGameSearch
+AS
+SELECT
+    GameID,
+    LegacyGameID,
+    SeasonYear,
+    SeasonPhase,
+    WeekLabel,
+    GameDate,
+    HomeAway,
+    OpponentCity,
+    OpponentState,
+    StadiumName,
+    City,
+    State,
+    WeatherConditions
+FROM dbo.tblGameDay;
+GO
+
+
+/*===========================================================
+PASSING VIEW
+===========================================================*/
+IF OBJECT_ID('dbo.vwSeasonPassing','V') IS NOT NULL
+DROP VIEW dbo.vwSeasonPassing;
+GO
+
+CREATE VIEW dbo.vwSeasonPassing
+AS
+SELECT
+    PassingID,
+    SeasonYear,
+    PlayerName,
+    Forename,
+    Surname,
+    Attempts,
+    Completions,
+    CompletionPct,
+    Yards,
+    TD,
+    INTs,
+    Rating
+FROM dbo.tblPassing;
+GO
+
+
+/*===========================================================
+RUSHING VIEW
+===========================================================*/
+IF OBJECT_ID('dbo.vwSeasonRushing','V') IS NOT NULL
+DROP VIEW dbo.vwSeasonRushing;
+GO
+
+CREATE VIEW dbo.vwSeasonRushing
+AS
+SELECT
+    RushingID,
+    SeasonYear,
+    PlayerName,
+    Forename,
+    Surname,
+    Attempts,
+    Yards,
+    Avg,
+    LongRush,
+    TD
+FROM dbo.tblRushing;
+GO
+
+
+/*===========================================================
+RECEIVING VIEW
+===========================================================*/
+IF OBJECT_ID('dbo.vwSeasonReceiving','V') IS NOT NULL
+DROP VIEW dbo.vwSeasonReceiving;
+GO
+
+CREATE VIEW dbo.vwSeasonReceiving
+AS
+SELECT
+    ReceivingID,
+    SeasonYear,
+    PlayerName,
+    Forename,
+    Surname,
+    Receptions,
+    Yards,
+    Avg,
+    LongCatch,
+    TD
+FROM dbo.tblReceiving;
+GO
+
+
+/*===========================================================
+COMBINED OFFENSE VIEW
+===========================================================*/
+IF OBJECT_ID('dbo.vwOffenseCombined','V') IS NOT NULL
+DROP VIEW dbo.vwOffenseCombined;
+GO
+
+CREATE VIEW dbo.vwOffenseCombined
+AS
+
+SELECT
+'Passing' StatType,
+SeasonYear,
+PlayerName,
+Attempts,
+Completions,
+Yards,
+TD
+FROM dbo.tblPassing
+
+UNION ALL
+
+SELECT
+'Rushing',
+SeasonYear,
+PlayerName,
+Attempts,
+NULL,
+Yards,
+TD
+FROM dbo.tblRushing
+
+UNION ALL
+
+SELECT
+'Receiving',
+SeasonYear,
+PlayerName,
+Receptions,
+NULL,
+Yards,
+TD
+FROM dbo.tblReceiving;
+GO
+
+
+/*===========================================================
+PLAYER SEASON SUMMARY
+===========================================================*/
+IF OBJECT_ID('dbo.vwPlayerSeasonSummary','V') IS NOT NULL
+DROP VIEW dbo.vwPlayerSeasonSummary;
+GO
+
+CREATE VIEW dbo.vwPlayerSeasonSummary
+AS
+
+WITH PlayerKeys AS
+(
+SELECT DISTINCT SeasonYear, PlayerName FROM dbo.tblPassing
+UNION
+SELECT DISTINCT SeasonYear, PlayerName FROM dbo.tblRushing
+UNION
+SELECT DISTINCT SeasonYear, PlayerName FROM dbo.tblReceiving
+)
+
+SELECT
+k.SeasonYear,
+k.PlayerName,
+
+p.Yards AS PassYds,
+p.TD AS PassTD,
+p.INTs AS PassINT,
+
+r.Yards AS RushYds,
+r.TD AS RushTD,
+
+c.Yards AS RecYds,
+c.TD AS RecTD
+
+FROM PlayerKeys k
+
+LEFT JOIN dbo.tblPassing p
+ON k.SeasonYear = p.SeasonYear
+AND k.PlayerName = p.PlayerName
+
+LEFT JOIN dbo.tblRushing r
+ON k.SeasonYear = r.SeasonYear
+AND k.PlayerName = r.PlayerName
+
+LEFT JOIN dbo.tblReceiving c
+ON k.SeasonYear = c.SeasonYear
+AND k.PlayerName = c.PlayerName;
+GO
+
+
+/*===========================================================
+QB BOARD
+===========================================================*/
+IF OBJECT_ID('dbo.vwQBBoard','V') IS NOT NULL
+DROP VIEW dbo.vwQBBoard;
+GO
+
+CREATE VIEW dbo.vwQBBoard
+AS
+SELECT
+SeasonYear,
+PlayerName,
+PassYds,
+PassTD,
+PassINT
+FROM dbo.vwPlayerSeasonSummary
+WHERE PassYds IS NOT NULL;
+GO
+
+
+/*===========================================================
+RB BOARD
+===========================================================*/
+IF OBJECT_ID('dbo.vwRBBoard','V') IS NOT NULL
+DROP VIEW dbo.vwRBBoard;
+GO
+
+CREATE VIEW dbo.vwRBBoard
+AS
+SELECT
+SeasonYear,
+PlayerName,
+RushYds,
+RushTD
+FROM dbo.vwPlayerSeasonSummary
+WHERE RushYds IS NOT NULL;
+GO
+
+
+/*===========================================================
+WR / TE BOARD
+===========================================================*/
+IF OBJECT_ID('dbo.vwWRTEBoard','V') IS NOT NULL
+DROP VIEW dbo.vwWRTEBoard;
+GO
+
+CREATE VIEW dbo.vwWRTEBoard
+AS
+SELECT
+SeasonYear,
+PlayerName,
+RecYds,
+RecTD
+FROM dbo.vwPlayerSeasonSummary
+WHERE RecYds IS NOT NULL;
+GO
