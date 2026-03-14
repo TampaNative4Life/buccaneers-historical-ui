@@ -1,0 +1,424 @@
+/*
+===============================================================
+FILE: styles.css
+PROJECT: Buccaneers Historical Database UI
+
+FILE STATUS
+-----------
+New file – no previous version exists
+
+CREATED
+-------
+2026-03-13
+
+CURRENT ROWCOUNT
+----------------
+224
+
+PURPOSE
+-------
+Primary stylesheet for the Buccaneers Historical Database web UI.
+
+Design goals:
+• Clean layout
+• Times New Roman throughout
+• Font size baseline 16px
+• Centered banner on every page
+• Creamsicle orange accents
+• No dark backgrounds
+• Strong table readability for historian/stat views
+
+FUNCTIONAL SECTIONS
+-------------------
+1. Root Theme Variables
+2. Global Resets / Base Page Styling
+3. Application Shell
+4. Banner
+5. Navigation
+6. Workspace / Cards
+7. Search Panel
+8. Buttons
+9. Tables / Grid Styling
+10. Placeholder Sections
+11. Responsive Rules
+
+FUTURE DEVELOPMENT
+------------------
+• Add active tab state based on route/page state
+• Add loading spinner styling
+• Add modal / detail panel styling
+• Add sortable grid header styles
+• Add print-friendly report styling
+
+NOTES
+-----
+This file assumes index.html already contains:
+• a banner section
+• a nav section
+• page sections
+• a results table with tbody id="resultsBody"
+
+===============================================================
+*/
+
+:root {
+  --cream-bg: #fffaf4;
+  --page-bg: #fffdf9;
+  --white: #ffffff;
+
+  --cream-orange: #ff6600;
+  --cream-orange-soft: #ffe3cf;
+  --cream-orange-light: #fff1e6;
+  --cream-orange-line: #f2b58d;
+
+  --text-main: #2d2a26;
+  --text-soft: #6f6256;
+  --text-accent: #8a3e00;
+
+  --border-light: #f1e4d8;
+  --row-line: #f5e9de;
+
+  --shadow-soft: 0 8px 22px rgba(0, 0, 0, 0.05);
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+}
+
+/*===============================================================
+  1. GLOBAL RESET / BASE
+===============================================================*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(180deg, var(--cream-bg) 0%, var(--page-bg) 100%);
+  color: var(--text-main);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+/*===============================================================
+  2. APP SHELL
+===============================================================*/
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 86px 56px 1fr;
+}
+
+/*===============================================================
+  3. BANNER
+===============================================================*/
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border-bottom: 3px solid var(--cream-orange);
+  text-align: center;
+  padding: 0 24px;
+}
+
+.banner h1 {
+  margin: 0;
+  color: var(--cream-orange);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/*===============================================================
+  4. NAVIGATION
+===============================================================*/
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--white);
+  border-bottom: 1px solid var(--cream-orange-line);
+  overflow-x: auto;
+}
+
+.nav button,
+.nav-btn {
+  appearance: none;
+  border: 1px solid var(--cream-orange-soft);
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  color: var(--cream-orange);
+  padding: 8px 16px;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.nav button:hover,
+.nav-btn:hover,
+.nav button.active,
+.nav-btn.active {
+  background: var(--cream-orange);
+  color: var(--white);
+  border-color: var(--cream-orange);
+}
+
+/*===============================================================
+  5. WORKSPACE / PAGE STRUCTURE
+===============================================================*/
+
+.workspace {
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 22px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/*===============================================================
+  6. CARD SHELL
+===============================================================*/
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.section-title {
+  margin: 0;
+  padding: 14px 18px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-accent);
+  border-bottom: 1px solid var(--border-light);
+}
+
+/*===============================================================
+  7. SEARCH PANEL
+===============================================================*/
+
+.search-card {
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  color: var(--text-accent);
+  font-weight: 700;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  border: 1px solid #ebc7ab;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  background: #fffdfa;
+  color: var(--text-main);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--cream-orange);
+  box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.12);
+}
+
+/*===============================================================
+  8. BUTTONS
+===============================================================*/
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn,
+button.btn {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--cream-orange);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.btn-secondary {
+  background: var(--cream-orange-soft);
+  color: #7b3600;
+}
+
+.btn-secondary:hover {
+  background: #ffd5b8;
+}
+
+/*===============================================================
+  9. TABLES / RESULT GRIDS
+===============================================================*/
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+}
+
+th,
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--row-line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  background: var(--cream-orange);
+  color: var(--white);
+  font-weight: 700;
+}
+
+td.num,
+th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+tbody tr:hover {
+  background: var(--cream-orange-light);
+}
+
+/*===============================================================
+  10. LEADERS PANELS
+===============================================================*/
+
+.leaders-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.small-table th,
+.small-table td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/*===============================================================
+  11. PLACEHOLDER CONTENT
+===============================================================*/
+
+.placeholder-card {
+  padding-bottom: 20px;
+}
+
+.placeholder-card p {
+  margin: 16px 18px 0;
+  color: var(--text-soft);
+}
+
+/*===============================================================
+  12. UTILITY CLASSES
+===============================================================*/
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.center {
+  text-align: center;
+}
+
+.muted {
+  color: var(--text-soft);
+}
+
+/*===============================================================
+  13. RESPONSIVE RULES
+===============================================================*/
+
+@media (max-width: 1050px) {
+  .search-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .leaders-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspace {
+    padding: 14px;
+  }
+
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav {
+    gap: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .nav button,
+  .nav-btn {
+    padding: 8px 12px;
+  }
+}
