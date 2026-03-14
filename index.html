@@ -13,7 +13,7 @@ CREATED
 
 ROWCOUNT
 --------
-191
+187
 
 PURPOSE
 -------
@@ -21,224 +21,210 @@ Primary interface for exploring Tampa Bay Buccaneers
 historical offensive statistics.
 
 This page connects to:
-
-styles.css  → visual layout
-app.js      → UI behavior and data rendering
+styles.css
+app.js
 
 FUNCTIONAL SECTIONS
 -------------------
 1. Banner
-2. Navigation Tabs
-3. Offensive Explorer Search Panel
-4. Offensive Results Grid
+2. Navigation
+3. Search Panel
+4. Results Grid
 5. Passing Leaders
 6. Rushing Leaders
 7. Receiving Leaders
 
-NOTES
------
-IDs in this page are required by app.js.
-
-Future pages will include:
-• Defensive Explorer
-• Game Explorer
-• Player Detail Pages
 ===============================================================
 -->
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Tampa Bay Buccaneers Historical Database</title>
-
-<link rel="stylesheet" href="styles.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tampa Bay Buccaneers Historical Database</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-<div class="app-shell">
+  <div class="app-shell">
 
-<header class="banner">
-<h1>Tampa Bay Buccaneers Historical Database</h1>
-</header>
+    <header class="banner">
+      <h1>Tampa Bay Buccaneers Historical Database</h1>
+    </header>
 
-<nav class="nav">
+    <nav class="nav">
+      <button class="nav-btn active" data-page="home">Home</button>
+      <button class="nav-btn" data-page="players">Players</button>
+      <button class="nav-btn" data-page="passing">Passing</button>
+      <button class="nav-btn" data-page="rushing">Rushing</button>
+      <button class="nav-btn" data-page="receiving">Receiving</button>
+      <button class="nav-btn" data-page="games">Games</button>
+    </nav>
 
-<button class="nav-btn active" data-page="home">Home</button>
-<button class="nav-btn" data-page="players">Players</button>
-<button class="nav-btn" data-page="passing">Passing</button>
-<button class="nav-btn" data-page="rushing">Rushing</button>
-<button class="nav-btn" data-page="receiving">Receiving</button>
-<button class="nav-btn" data-page="games">Games</button>
+    <main class="workspace">
 
-</nav>
+      <section id="home" class="page active">
 
-<main class="workspace">
+        <div class="card search-card">
+          <div class="search-grid">
 
-<section id="home" class="page active">
+            <div class="field">
+              <label for="playerSearch">Player</label>
+              <input id="playerSearch" type="text" placeholder="Mike Evans">
+            </div>
 
-<div class="card search-card">
+            <div class="field">
+              <label for="seasonFilter">Season</label>
+              <select id="seasonFilter">
+                <option value="All">All</option>
+              </select>
+            </div>
 
-<div class="search-grid">
+            <div class="field">
+              <label for="positionFilter">Position</label>
+              <select id="positionFilter">
+                <option value="All">All</option>
+                <option value="QB">QB</option>
+                <option value="RB">RB</option>
+                <option value="FB">FB</option>
+                <option value="WR">WR</option>
+                <option value="TE">TE</option>
+              </select>
+            </div>
 
-<div class="field">
-<label>Player</label>
-<input id="playerSearch" type="text" placeholder="Mike Evans">
-</div>
+            <div class="field">
+              <label for="statTypeFilter">Stat Type</label>
+              <select id="statTypeFilter">
+                <option value="Combined">Combined</option>
+                <option value="Passing">Passing</option>
+                <option value="Rushing">Rushing</option>
+                <option value="Receiving">Receiving</option>
+              </select>
+            </div>
 
-<div class="field">
-<label>Season</label>
-<select id="seasonFilter">
-<option value="All">All</option>
-</select>
-</div>
+          </div>
 
-<div class="field">
-<label>Position</label>
-<select id="positionFilter">
-<option value="All">All</option>
-<option value="QB">QB</option>
-<option value="RB">RB</option>
-<option value="WR">WR</option>
-<option value="TE">TE</option>
-</select>
-</div>
+          <div class="actions">
+            <button id="searchBtn" class="btn btn-primary">Search</button>
+            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+          </div>
+        </div>
 
-<div class="field">
-<label>Stat Type</label>
-<select id="statTypeFilter">
-<option value="Combined">Combined</option>
-<option value="Passing">Passing</option>
-<option value="Rushing">Rushing</option>
-<option value="Receiving">Receiving</option>
-</select>
-</div>
+        <div class="card">
+          <h2 class="section-title">Offensive Explorer Results</h2>
 
-</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Season</th>
+                  <th>Player</th>
+                  <th>Position</th>
+                  <th class="num">Pass Yds</th>
+                  <th class="num">Rush Yds</th>
+                  <th class="num">Rec Yds</th>
+                  <th class="num">Pass TD</th>
+                  <th class="num">Rush TD</th>
+                  <th class="num">Rec TD</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+          </div>
+        </div>
 
-<div class="actions">
+        <div class="leaders-grid">
 
-<button id="searchBtn" class="btn btn-primary">Search</button>
-<button id="clearBtn" class="btn btn-secondary">Clear</button>
+          <div class="card">
+            <h2 class="section-title">Passing Leaders</h2>
+            <div class="table-wrap small-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Season</th>
+                    <th>Player</th>
+                    <th class="num">Yards</th>
+                  </tr>
+                </thead>
+                <tbody id="passingLeadersBody"></tbody>
+              </table>
+            </div>
+          </div>
 
-</div>
+          <div class="card">
+            <h2 class="section-title">Rushing Leaders</h2>
+            <div class="table-wrap small-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Season</th>
+                    <th>Player</th>
+                    <th class="num">Yards</th>
+                  </tr>
+                </thead>
+                <tbody id="rushingLeadersBody"></tbody>
+              </table>
+            </div>
+          </div>
 
-</div>
+          <div class="card">
+            <h2 class="section-title">Receiving Leaders</h2>
+            <div class="table-wrap small-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Season</th>
+                    <th>Player</th>
+                    <th class="num">Yards</th>
+                  </tr>
+                </thead>
+                <tbody id="receivingLeadersBody"></tbody>
+              </table>
+            </div>
+          </div>
 
-<div class="card">
+        </div>
+      </section>
 
-<h2 class="section-title">Offensive Explorer Results</h2>
+      <section id="players" class="page">
+        <div class="card placeholder-card">
+          <h2 class="section-title">Players</h2>
+          <p>Player search screen comes next.</p>
+        </div>
+      </section>
 
-<div class="table-wrap">
+      <section id="passing" class="page">
+        <div class="card placeholder-card">
+          <h2 class="section-title">Passing</h2>
+          <p>Passing leaderboards and player drilldown come next.</p>
+        </div>
+      </section>
 
-<table>
+      <section id="rushing" class="page">
+        <div class="card placeholder-card">
+          <h2 class="section-title">Rushing</h2>
+          <p>Rushing leaderboards and player drilldown come next.</p>
+        </div>
+      </section>
 
-<thead>
+      <section id="receiving" class="page">
+        <div class="card placeholder-card">
+          <h2 class="section-title">Receiving</h2>
+          <p>Receiving leaderboards and player drilldown come next.</p>
+        </div>
+      </section>
 
-<tr>
+      <section id="games" class="page">
+        <div class="card placeholder-card">
+          <h2 class="section-title">Games</h2>
+          <p>Game search and opponent filters come next.</p>
+        </div>
+      </section>
 
-<th>Season</th>
-<th>Player</th>
-<th>Position</th>
+    </main>
+  </div>
 
-<th class="num">Pass Yds</th>
-<th class="num">Rush Yds</th>
-<th class="num">Rec Yds</th>
-
-<th class="num">Pass TD</th>
-<th class="num">Rush TD</th>
-<th class="num">Rec TD</th>
-
-</tr>
-
-</thead>
-
-<tbody id="resultsBody">
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<div class="leaders-grid">
-
-<div class="card">
-
-<h2 class="section-title">Passing Leaders</h2>
-
-<table>
-
-<thead>
-<tr>
-<th>Season</th>
-<th>Player</th>
-<th class="num">Yards</th>
-</tr>
-</thead>
-
-<tbody id="passingLeadersBody"></tbody>
-
-</table>
-
-</div>
-
-<div class="card">
-
-<h2 class="section-title">Rushing Leaders</h2>
-
-<table>
-
-<thead>
-<tr>
-<th>Season</th>
-<th>Player</th>
-<th class="num">Yards</th>
-</tr>
-</thead>
-
-<tbody id="rushingLeadersBody"></tbody>
-
-</table>
-
-</div>
-
-<div class="card">
-
-<h2 class="section-title">Receiving Leaders</h2>
-
-<table>
-
-<thead>
-<tr>
-<th>Season</th>
-<th>Player</th>
-<th class="num">Yards</th>
-</tr>
-</thead>
-
-<tbody id="receivingLeadersBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-</main>
-
-</div>
-
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
