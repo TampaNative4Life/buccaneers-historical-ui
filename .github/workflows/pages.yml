@@ -1,0 +1,75 @@
+# ===============================================================
+# FILE: .github/workflows/pages.yml
+# PROJECT: Buccaneers Historical Database UI
+#
+# FILE STATUS
+# -----------
+# New file – no previous version exists
+#
+# CREATED
+# -------
+# 2026-03-14
+#
+# CURRENT ROWCOUNT
+# ----------------
+# 52
+#
+# PURPOSE
+# -------
+# Deploy GitHub Pages from the /site folder instead of repo root.
+#
+# FUNCTIONAL SECTIONS
+# -------------------
+# 1. Trigger on push to main
+# 2. Configure Pages
+# 3. Upload /site as deployment artifact
+# 4. Deploy artifact to GitHub Pages
+#
+# NOTES
+# -----
+# This allows the repo to keep:
+#   /site
+#   /sql
+#   /notes
+# while publishing only the website files.
+# ===============================================================
+
+name: Deploy site folder to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site folder
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
