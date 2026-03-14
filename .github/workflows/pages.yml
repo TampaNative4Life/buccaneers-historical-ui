@@ -4,34 +4,23 @@
 #
 # FILE STATUS
 # -----------
-# New file – no previous version exists
+# Initial working deployment workflow
 #
 # CREATED
 # -------
 # 2026-03-14
 #
-# CURRENT ROWCOUNT
-# ----------------
-# 52
-#
 # PURPOSE
 # -------
-# Deploy GitHub Pages from the /site folder instead of repo root.
+# Deploy GitHub Pages from /site folder
 #
-# FUNCTIONAL SECTIONS
-# -------------------
-# 1. Trigger on push to main
-# 2. Configure Pages
-# 3. Upload /site as deployment artifact
-# 4. Deploy artifact to GitHub Pages
+# STRUCTURE
+# ---------
+# 1. Checkout repo
+# 2. Configure GitHub Pages
+# 3. Upload /site folder
+# 4. Deploy to Pages
 #
-# NOTES
-# -----
-# This allows the repo to keep:
-#   /site
-#   /sql
-#   /notes
-# while publishing only the website files.
 # ===============================================================
 
 name: Deploy site folder to GitHub Pages
@@ -48,28 +37,32 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configure GitHub Pages
+      - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload site folder
+      - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
