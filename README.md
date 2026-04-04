@@ -1,2 +1,2 @@
-# buccaneers-historical-ui
+# Buccaneers-Historical-ui
 .
